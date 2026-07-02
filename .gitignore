@@ -1,0 +1,11 @@
+output/
+rootfs/
+build/tmp/
+*.iso
+*.img
+*.log
+*.cache
+*.swp
+__pycache__/
+*.pyc
+.env
