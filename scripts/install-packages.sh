@@ -39,7 +39,4 @@ sudo umount "$ROOTFS/dev"
 sudo umount "$ROOTFS/proc"
 sudo umount "$ROOTFS/sys"
 
-echo
-echo "==================================="
 echo "Packages installed successfully!"
-echo "==================================="

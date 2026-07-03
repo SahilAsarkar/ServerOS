@@ -1,0 +1,9 @@
+NAME="ServerOS"
+VERSION="0.1.0"
+ID=serveros
+ID_LIKE=ubuntu
+PRETTY_NAME="ServerOS 0.1.0"
+VERSION_ID="0.1.0"
+HOME_URL="https://github.com/SahilAsarkar/ServerOS"
+SUPPORT_URL="https://github.com/SahilAsarkar/ServerOS/issues"
+BUG_REPORT_URL="https://github.com/SahilAsarkar/ServerOS/issues"
