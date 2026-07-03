@@ -1,11 +1,37 @@
+# Build outputs
 output/
-rootfs/
+iso/
 build/tmp/
+
+# Temporary root filesystem
+rootfs/
+
+# Disk images
 *.iso
 *.img
+*.vdi
+*.vmdk
+
+# Logs
 *.log
+
+# Cache
 *.cache
-*.swp
 __pycache__/
 *.pyc
+
+# Swap files
+*.swp
+*.swo
+*~
+
+# Environment files
 .env
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
