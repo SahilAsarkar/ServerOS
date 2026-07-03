@@ -1,0 +1,11 @@
+sudo
+curl
+wget
+vim
+nano
+tree
+htop
+git
+ca-certificates
+bash-completion
+less
