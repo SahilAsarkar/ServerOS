@@ -215,6 +215,4 @@ Before submitting changes:
 
 # Author
 
-Developed by Sahil Asarkar
-ServerOS
-0.1.0 Alpha
+Sahil Asarkar
