@@ -216,11 +216,5 @@ Before submitting changes:
 # Author
 
 Developed by Sahil Asarkar
-
-Project Name
-
 ServerOS
-
-Version
-
 0.1.0 Alpha
