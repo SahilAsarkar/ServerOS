@@ -1,6 +1,6 @@
 # ServerOS
 
-ServerOS is a lightweight, Debian-based Linux distribution built from scratch for servers, cloud deployments, virtual machines, and Raspberry Pi devices.
+ServerOS is a lightweight, Debian-based Linux distribution built from scratch for servers, cloud deployments and Raspberry Pi devices.
 
 The goal of this project is to create a fast, minimal, secure, and customizable operating system that contains only the components required to run server workloads while providing an easy build system for developers.
 
