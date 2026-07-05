@@ -2,16 +2,9 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+mkdir -p iso/boot/grub
 
-ISO="$PROJECT_ROOT/iso"
-
-echo "Creating grub.cfg..."
-
-mkdir -p "$ISO/boot/grub"
-
-cat > "$ISO/boot/grub/grub.cfg" <<EOF
+cat > iso/boot/grub/grub.cfg <<EOF
 set timeout=5
 set default=0
 
@@ -20,5 +13,3 @@ menuentry "ServerOS Live" {
     initrd /casper/initrd
 }
 EOF
-
-echo "GRUB configuration created."

@@ -2,22 +2,12 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-
-ISO="$PROJECT_ROOT/iso"
-OUTPUT="$PROJECT_ROOT/output"
-
-mkdir -p "$OUTPUT"
-
-echo "Building ServerOS ISO..."
+mkdir -p output
 
 sudo grub-mkrescue \
--o "$OUTPUT/ServerOS-amd64.iso" \
-"$ISO"
+-o output/ServerOS-amd64.iso \
+iso
 
-echo ""
-echo "========================================"
-echo "ServerOS Live ISO created successfully!"
-echo "$OUTPUT/ServerOS-amd64.iso"
-echo "========================================"
+echo
+echo "ISO created:"
+echo "output/ServerOS-amd64.iso"
