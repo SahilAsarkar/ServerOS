@@ -1,29 +1,26 @@
 # ServerOS
 
-ServerOS is a lightweight, Debian-based Linux distribution built from scratch for servers, cloud deployments and Raspberry Pi devices.
+ServerOS is a lightweight Linux distribution built from Ubuntu using Debian's `debootstrap`. It is designed as a minimal server operating system that contains only the essential components required to boot and operate reliably while remaining fully customizable.
 
-The goal of this project is to create a fast, minimal, secure, and customizable operating system that contains only the components required to run server workloads while providing an easy build system for developers.
+The project is built completely through Bash automation scripts, making the build process reproducible and easy to modify.
 
 ---
 
 # Features
 
-- Debian-based
-- Lightweight root filesystem
+- Minimal Ubuntu-based Linux distribution
+- Automated ISO generation
+- BIOS and UEFI boot support
+- Live boot support using Casper
 - Custom ServerOS branding
-- Automated build pipeline
-- Live ISO generation
-- GRUB bootloader
-- BIOS support
-- UEFI support
-- SquashFS live filesystem
-- Automatic manifest generation
-- Automatic filesystem size generation
-- Automatic checksum generation
-- Custom ServerOS commands
-- Git-based project structure
-- Modular build scripts
-- Rebuild automation
+- Custom login banner
+- Custom MOTD
+- Custom commands
+- Automatic user creation
+- Automatic package installation
+- Modular build system
+- Easy to customize
+- Open source
 
 ---
 
@@ -31,41 +28,25 @@ The goal of this project is to create a fast, minimal, secure, and customizable 
 
 ```
 ServerOS/
-│
-├── scripts/
-│   ├── rebuild.sh
-│   ├── create-rootfs.sh
-│   ├── configure-boot.sh
-│   ├── install-packages.sh
-│   ├── install-commands.sh
-│   ├── apply-branding.sh
-│   ├── create-live-files.sh
-│   ├── generate-grub.sh
-│   ├── create-bios.sh
-│   ├── create-efi.sh
-│   ├── create-md5.sh
-│   ├── validate-iso.sh
-│   └── build-live-iso.sh
-│
-├── rootfs/
-├── iso/
-├── output/
 ├── branding/
-├── configs/
-├── packages/
-├── docs/
-└── README.md
+├── commands/
+├── output/
+├── rootfs/
+├── scripts/
+├── iso/
+├── README.md
+└── LICENSE
 ```
 
 ---
 
 # Requirements
 
-Ubuntu 24.04 LTS or newer
+Ubuntu 24.04 or newer
 
-Packages:
+Required packages
 
-```
+```bash
 sudo apt update
 
 sudo apt install \
@@ -74,90 +55,43 @@ squashfs-tools \
 xorriso \
 grub-pc-bin \
 grub-efi-amd64-bin \
-grub-common \
 mtools \
 dosfstools \
-xfsprogs \
-rsync \
-wget \
-curl \
+casper \
 git \
-nano
+wget \
+curl
 ```
 
 ---
 
-# Building ServerOS
+# Clone the Repository
 
-Clone the repository
-
-```
-git clone <repository-url>
+```bash
+git clone https://github.com/SahilAsarkar/ServerOS.git
 
 cd ServerOS
 ```
 
-Make every script executable
+---
 
-```
+# Make Scripts Executable
+
+```bash
 chmod +x scripts/*.sh
 ```
 
-Build ServerOS
+---
 
-```
+# Build ServerOS
+
+Build the AMD64 ISO
+
+```bash
 ./scripts/rebuild.sh amd64
 ```
 
-For ARM64
-
-```
-./scripts/rebuild.sh arm64
-```
-
----
-
-# Build Pipeline
-
-The rebuild script automatically performs:
-
-```
-1. Create Root Filesystem
-
-2. Configure Boot
-
-3. Install Packages
-
-4. Apply Branding
-
-5. Install Custom Commands
-
-6. Create Live Files
-
-7. Generate GRUB Configuration
-
-8. Create BIOS Boot Image
-
-9. Create EFI Boot Image
-
-10. Generate MD5 Checksums
-
-11. Build Live ISO
-
-12. Validate ISO
-```
-
----
-
-# Output
-
-The finished ISO is generated in
-
-```
-output/
-```
-
-Example
+After the build finishes, the ISO will be generated in
 
 ```
 output/ServerOS-amd64.iso
@@ -165,54 +99,166 @@ output/ServerOS-amd64.iso
 
 ---
 
-# Goals
+# Writing the ISO to USB
 
-ServerOS aims to become a complete Linux distribution featuring
+Use any ISO writing software such as
 
-- Live ISO
-- Installer
-- Package Repository
-- OTA Updates
-- Raspberry Pi Support
-- ARM64 Builds
-- Server Profiles
-- Docker Integration
-- Kubernetes Support
-- Monitoring Tools
-- Secure Boot
-- Disk Encryption
-- CI/CD Build System
+- Rufus
+- Balena Etcher
+- Ventoy
+
+Then boot your computer from the USB drive.
 
 ---
 
-# Supported Platforms
+# Login
 
-Current
+Default user
 
-- AMD64
+```
+Username: serveros
+Password: serveros
+```
 
-Planned
+Root
 
-- ARM64
-- Raspberry Pi Zero
-- Raspberry Pi 4
-- Raspberry Pi 5
+```
+Username: root
+Password: root
+```
+
+(Replace these with your own passwords before distributing the OS.)
+
+---
+
+# Custom Commands
+
+ServerOS installs several custom terminal commands.
+
+Example
+
+```bash
+server-info
+```
+
+Displays
+
+- Distribution information
+- Hostname
+- Kernel version
+- CPU information
+- Memory usage
+- Disk usage
+- Uptime
+
+Additional commands can be placed inside the `commands/` directory.
+
+---
+
+# Customizing ServerOS
+
+Branding files are located in
+
+```
+branding/
+```
+
+Examples
+
+```
+branding/
+├── os-release
+├── lsb-release
+├── hostname
+├── hosts
+├── issue
+├── issue.net
+└── motd
+```
+
+Modify these files to change the operating system branding.
+
+---
+
+# Build Scripts
+
+The entire build process is automated through modular scripts.
+
+```
+create-rootfs.sh
+configure-boot.sh
+install-packages.sh
+create-user.sh
+apply-branding.sh
+install-commands.sh
+check-kernel.sh
+check-casper.sh
+build-live-files.sh
+create-manifest.sh
+generate-grub.sh
+validate-iso.sh
+build-live-iso.sh
+rebuild.sh
+```
+
+Each script performs a specific task, making the project easy to understand and maintain.
+
+---
+
+# Roadmap
+
+Future versions will include
+
+- Better branding system
+- Package manager improvements
+- Installer
+- Automatic updates
+- Additional ServerOS utilities
+- ARM support
+- Raspberry Pi support
+- More custom commands
+- Better hardware detection
 
 ---
 
 # Contributing
 
-Contributions are welcome.
+Contributions, improvements, bug reports, and feature requests are welcome.
 
-Before submitting changes:
+Fork the repository, create a branch, make your changes, and submit a pull request.
 
-- Fork the repository
-- Create a feature branch
-- Commit using meaningful commit messages
-- Open a Pull Request
+---
+
+# License
+
+This project is released under the MIT License.
 
 ---
 
 # Author
 
-Sahil Asarkar
+**Sahil Asarkar**
+
+GitHub
+
+https://github.com/SahilAsarkar
+
+Project
+
+https://github.com/SahilAsarkar/ServerOS
+
+---
+
+# Acknowledgements
+
+ServerOS is built using open-source Linux technologies including
+
+- Ubuntu
+- Debian
+- debootstrap
+- GRUB
+- Casper
+- SquashFS
+- xorriso
+
+Thanks to the Linux open-source community for providing the tools that make this project possible.
