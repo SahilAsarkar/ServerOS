@@ -1,22 +1,9 @@
 #!/bin/bash
-
 set -e
-
-ROOTFS=rootfs
-
-sudo chroot "$ROOTFS" bash <<'EOF'
-
-if ! id serveros >/dev/null 2>&1
-then
-    useradd -m -s /bin/bash serveros
-fi
-
+ROOTFS="${ROOTFS:-rootfs}"
+sudo chroot "$ROOTFS" /bin/bash <<'EOF'
+id serveros >/dev/null 2>&1 || useradd -m -s /bin/bash serveros
 echo "serveros:serveros" | chpasswd
-
-usermod -aG sudo serveros
-
 echo "root:root" | chpasswd
-
+usermod -aG sudo serveros
 EOF
-
-echo "Default users created."
