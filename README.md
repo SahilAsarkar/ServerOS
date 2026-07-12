@@ -24,22 +24,6 @@ The project is built completely through Bash automation scripts, making the buil
 
 ---
 
-# Project Structure
-
-```
-ServerOS/
-├── branding/
-├── commands/
-├── output/
-├── rootfs/
-├── scripts/
-├── iso/
-├── README.md
-└── LICENSE
-```
-
----
-
 # Requirements
 
 Ubuntu 24.04 or newer
