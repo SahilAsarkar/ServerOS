@@ -1,0 +1,96 @@
+#!/bin/bash
+
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+clear
+
+echo -e "${BLUE}"
+echo "=============================================="
+echo "         ServerOS Network Information"
+echo "=============================================="
+echo -e "${RESET}"
+
+echo -e "${CYAN}Hostname:${RESET} $(hostname)"
+echo
+
+echo -e "${CYAN}Active Network Interfaces${RESET}"
+ip -br addr | grep -v "DOWN"
+
+echo
+
+echo -e "${CYAN}IPv4 Addresses${RESET}"
+ip -4 addr show | awk '/inet / {print "• " $2 " (" $NF ")"}'
+
+echo
+
+echo -e "${CYAN}Default Gateway${RESET}"
+ip route | awk '/default/ {print $3}'
+
+echo
+
+echo -e "${CYAN}DNS Servers${RESET}"
+
+if [ -f /etc/resolv.conf ]; then
+    grep "^nameserver" /etc/resolv.conf | awk '{print "• "$2}'
+else
+    echo "Not Found"
+fi
+
+echo
+
+echo -e "${CYAN}Routing Table${RESET}"
+ip route
+
+echo
+
+echo -e "${CYAN}Listening TCP Ports${RESET}"
+ss -tln | awk 'NR==1 || NR>1'
+
+echo
+
+echo -e "${CYAN}Listening UDP Ports${RESET}"
+ss -uln | awk 'NR==1 || NR>1'
+
+echo
+
+echo -e "${CYAN}Internet Connectivity${RESET}"
+
+if ping -c1 -W2 8.8.8.8 >/dev/null 2>&1; then
+    echo -e "${GREEN}✓ Internet Reachable${RESET}"
+else
+    echo -e "${RED}✗ No Internet Access${RESET}"
+fi
+
+echo
+
+echo -e "${CYAN}DNS Resolution${RESET}"
+
+if ping -c1 -W2 google.com >/dev/null 2>&1; then
+    echo -e "${GREEN}✓ DNS Working${RESET}"
+else
+    echo -e "${RED}✗ DNS Not Working${RESET}"
+fi
+
+echo
+
+echo -e "${CYAN}Network Statistics${RESET}"
+
+RX=$(cat /proc/net/dev | awk 'NR>2 {rx+=$2} END {printf "%.2f MB", rx/1024/1024}')
+TX=$(cat /proc/net/dev | awk 'NR>2 {tx+=$10} END {printf "%.2f MB", tx/1024/1024}')
+
+echo "Downloaded : $RX"
+echo "Uploaded   : $TX"
+
+echo
+
+echo -e "${CYAN}Active Connections${RESET}"
+ss -tun | tail -n +2 | wc -l
+
+echo
+
+echo -e "${GREEN}Network Scan Completed.${RESET}"

@@ -1,0 +1,147 @@
+#!/bin/bash
+
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+clear
+
+echo -e "${BLUE}"
+echo "=============================================="
+echo "           ServerOS Health Check"
+echo "=============================================="
+echo -e "${RESET}"
+
+warn=0
+
+check() {
+    local status=$1
+    local message=$2
+
+    if [ "$status" -eq 0 ]; then
+        echo -e "${GREEN}[ OK ]${RESET} $message"
+    else
+        echo -e "${RED}[FAIL]${RESET} $message"
+        warn=1
+    fi
+}
+
+warning() {
+    echo -e "${YELLOW}[WARN]${RESET} $1"
+}
+
+echo
+echo "Checking Disk Usage..."
+
+DISK_USE=$(df / | awk 'NR==2 {gsub("%",""); print $5}')
+
+if [ "$DISK_USE" -ge 90 ]; then
+    warning "Disk usage is ${DISK_USE}%"
+    warn=1
+else
+    check 0 "Disk usage is ${DISK_USE}%"
+fi
+
+echo
+echo "Checking Memory..."
+
+MEM_USE=$(free | awk '/Mem:/ {printf("%d"), $3/$2*100}')
+
+if [ "$MEM_USE" -ge 90 ]; then
+    warning "Memory usage is ${MEM_USE}%"
+    warn=1
+else
+    check 0 "Memory usage is ${MEM_USE}%"
+fi
+
+echo
+echo "Checking Internet..."
+
+ping -c1 -W2 8.8.8.8 >/dev/null 2>&1
+check $? "Internet Connectivity"
+
+echo
+echo "Checking DNS..."
+
+ping -c1 -W2 google.com >/dev/null 2>&1
+check $? "DNS Resolution"
+
+echo
+echo "Checking Failed Services..."
+
+FAILED=$(systemctl --failed --no-legend | wc -l)
+
+if [ "$FAILED" -eq 0 ]; then
+    check 0 "No failed services"
+else
+    warning "$FAILED failed service(s)"
+    systemctl --failed --no-pager
+    warn=1
+fi
+
+echo
+echo "Checking Pending Updates..."
+
+if command -v apt >/dev/null 2>&1; then
+    UPDATES=$(apt list --upgradable 2>/dev/null | tail -n +2 | wc -l)
+
+    if [ "$UPDATES" -eq 0 ]; then
+        check 0 "System is up to date"
+    else
+        warning "$UPDATES package(s) can be upgraded"
+    fi
+fi
+
+echo
+echo "Checking SSH..."
+
+systemctl is-active --quiet ssh
+check $? "SSH Service"
+
+echo
+echo "Checking Docker..."
+
+if command -v docker >/dev/null 2>&1; then
+    systemctl is-active --quiet docker
+    check $? "Docker Service"
+else
+    warning "Docker is not installed"
+fi
+
+echo
+echo "Checking Nginx..."
+
+if command -v nginx >/dev/null 2>&1; then
+    systemctl is-active --quiet nginx
+    check $? "Nginx Service"
+else
+    warning "Nginx is not installed"
+fi
+
+echo
+echo "Checking System Load..."
+
+LOAD=$(awk '{print int($1)}' /proc/loadavg)
+
+CORES=$(nproc)
+
+if [ "$LOAD" -gt "$CORES" ]; then
+    warning "High CPU Load ($LOAD)"
+    warn=1
+else
+    check 0 "CPU Load Normal"
+fi
+
+echo
+echo "----------------------------------------------"
+
+if [ "$warn" -eq 0 ]; then
+    echo -e "${GREEN}✓ Overall System Health: GOOD${RESET}"
+else
+    echo -e "${YELLOW}⚠ Overall System Health: ATTENTION REQUIRED${RESET}"
+fi
+
+echo "----------------------------------------------"

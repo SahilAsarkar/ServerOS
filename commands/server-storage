@@ -1,0 +1,98 @@
+#!/bin/bash
+
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+clear
+
+echo -e "${BLUE}"
+echo "=============================================="
+echo "         ServerOS Storage Information"
+echo "=============================================="
+echo -e "${RESET}"
+
+echo -e "${CYAN}Mounted Filesystems${RESET}"
+df -hT | column -t
+
+echo
+echo -e "${CYAN}Filesystem Inode Usage${RESET}"
+df -i | column -t
+
+echo
+echo -e "${CYAN}Root Filesystem Usage${RESET}"
+
+USED=$(df / | awk 'NR==2 {gsub("%",""); print $5}')
+
+if [ "$USED" -ge 90 ]; then
+    COLOR=$RED
+elif [ "$USED" -ge 75 ]; then
+    COLOR=$YELLOW
+else
+    COLOR=$GREEN
+fi
+
+echo -e "${COLOR}Disk Usage: ${USED}%${RESET}"
+
+echo
+echo -e "${CYAN}Storage Devices${RESET}"
+
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,TYPE
+
+echo
+echo -e "${CYAN}Largest Directories (/){RESET}"
+du -xh / --max-depth=1 2>/dev/null | sort -hr | head -10
+
+echo
+echo -e "${CYAN}Largest Directories (/home)${RESET}"
+
+if [ -d /home ]; then
+    du -xh /home --max-depth=1 2>/dev/null | sort -hr | head -10
+else
+    echo "/home not found."
+fi
+
+echo
+echo -e "${CYAN}Largest Files (>100MB)${RESET}"
+
+find / -type f -size +100M 2>/dev/null | head -20
+
+echo
+echo -e "${CYAN}Disk I/O Statistics${RESET}"
+
+if command -v iostat >/dev/null 2>&1; then
+    iostat -dx 1 1
+else
+    echo "sysstat package not installed."
+fi
+
+echo
+echo -e "${CYAN}Disk Health (SMART)${RESET}"
+
+if command -v smartctl >/dev/null 2>&1; then
+    for disk in /dev/sd? /dev/nvme?n1; do
+        [ -e "$disk" ] || continue
+        echo
+        echo "Device: $disk"
+        smartctl -H "$disk" | grep "SMART overall-health"
+    done
+else
+    echo "smartmontools not installed."
+fi
+
+echo
+echo -e "${CYAN}Storage Summary${RESET}"
+
+TOTAL=$(df -h / | awk 'NR==2 {print $2}')
+USED_SPACE=$(df -h / | awk 'NR==2 {print $3}')
+FREE=$(df -h / | awk 'NR==2 {print $4}')
+
+echo "Total Space : $TOTAL"
+echo "Used Space  : $USED_SPACE"
+echo "Free Space  : $FREE"
+
+echo
+echo -e "${GREEN}Storage Scan Completed.${RESET}"

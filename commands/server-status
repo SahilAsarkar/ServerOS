@@ -1,0 +1,50 @@
+#!/bin/bash
+
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+CYAN="\e[36m"
+RESET="\e[0m"
+
+clear
+
+echo -e "${BLUE}"
+echo "=============================================="
+echo "           ServerOS System Status"
+echo "=============================================="
+echo -e "${RESET}"
+
+HOSTNAME=$(hostname)
+KERNEL=$(uname -r)
+UPTIME=$(uptime -p)
+
+CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print 100-$8"%"}')
+
+MEMORY=$(free -h | awk '/Mem:/ {print $3" / "$2}')
+
+DISK=$(df -h / | awk 'NR==2 {print $3" / "$2" ("$5")"}')
+
+LOAD=$(uptime | awk -F'load average:' '{print $2}')
+
+IP=$(hostname -I | awk '{print $1}')
+
+TEMP="Not Available"
+
+if [ -f /sys/class/thermal/thermal_zone0/temp ]; then
+    RAW=$(cat /sys/class/thermal/thermal_zone0/temp)
+    TEMP=$(awk "BEGIN {printf \"%.1f°C\", $RAW/1000}")
+fi
+
+echo -e "${CYAN}Hostname      :${RESET} $HOSTNAME"
+echo -e "${CYAN}Kernel        :${RESET} $KERNEL"
+echo -e "${CYAN}Uptime        :${RESET} $UPTIME"
+echo -e "${CYAN}CPU Usage     :${RESET} $CPU_USAGE"
+echo -e "${CYAN}Memory Usage  :${RESET} $MEMORY"
+echo -e "${CYAN}Disk Usage    :${RESET} $DISK"
+echo -e "${CYAN}Temperature   :${RESET} $TEMP"
+echo -e "${CYAN}IP Address    :${RESET} $IP"
+echo -e "${CYAN}Load Average  :${RESET} $LOAD"
+
+echo
+echo -e "${GREEN}System Status: OK${RESET}"
